@@ -122,7 +122,7 @@ with open('foggy_road.jpg', 'rb') as f:
 | Component | Technology |
 |-----------|-----------|
 | Backend | Flask 3.0 (Python) |
-| Deep Learning | YOLOv8 (Ultralytics) |
+| Deep Learning | YOLO26 (Ultralytics) |
 | Computer Vision | OpenCV |
 | Frontend | Bootstrap 5, HTML5, CSS3, JavaScript |
 | API | REST (JSON) |
@@ -136,10 +136,5 @@ Edit `app/config.py` to adjust:
 - `CONFIDENCE_THRESHOLD` — Default detection confidence (0.25)
 - `IOU_THRESHOLD` — Default IoU for NMS (0.45)
 - `MAX_CONTENT_LENGTH` — Max upload size (100 MB)
-- `MODEL_PATH` — Path to YOLOv8 weights
+- `MODEL_PATH` — Path to YOLO26 weights
 
----
-
-## License
-
-Final Year Project — For academic use only.
