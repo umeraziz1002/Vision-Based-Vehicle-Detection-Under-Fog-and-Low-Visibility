@@ -1,0 +1,67 @@
+[
+  {
+    "file_type": "image",
+    "original_file": "682276d20fd6479bb311e8f5bd63ab76.png",
+    "output_file": "682276d20fd6479bb311e8f5bd63ab76_detected.png",
+    "dehazing_used": false,
+    "total_detections": 26,
+    "class_counts": {
+      "car": 10,
+      "motorcycle": 2,
+      "bicycle": 1,
+      "person": 12,
+      "bus": 1
+    },
+    "mode": "detect_only",
+    "timestamp": "2026-06-09 20:29:33"
+  },
+  {
+    "file_type": "image",
+    "original_file": "b316a3c731e842f9b6e33fedef0cde93.png",
+    "output_file": "b316a3c731e842f9b6e33fedef0cde93_detected.png",
+    "dehazed_file": "b316a3c731e842f9b6e33fedef0cde93_dehazed.png",
+    "dehazing_used": true,
+    "total_detections": 0,
+    "class_counts": {},
+    "mode": "dehaze_detect",
+    "timestamp": "2026-06-09 18:04:09"
+  },
+  {
+    "file_type": "image",
+    "original_file": "f0008e4dc2674f58aaebd8fbbf772fdc.png",
+    "output_file": "f0008e4dc2674f58aaebd8fbbf772fdc_detected.png",
+    "total_detections": 26,
+    "class_counts": {
+      "car": 10,
+      "motorcycle": 2,
+      "bicycle": 1,
+      "person": 12,
+      "bus": 1
+    },
+    "timestamp": "2026-05-25 13:34:56"
+  },
+  {
+    "file_type": "image",
+    "original_file": "9bf3688d71d6451f9161f868716fa7b3.png",
+    "output_file": "9bf3688d71d6451f9161f868716fa7b3_detected.png",
+    "total_detections": 7,
+    "class_counts": {
+      "car": 7
+    },
+    "timestamp": "2026-05-24 16:05:24"
+  },
+  {
+    "file_type": "image",
+    "original_file": "c6fbb8d6306a4dc2be4a7beb8da8be14.png",
+    "output_file": "c6fbb8d6306a4dc2be4a7beb8da8be14_detected.png",
+    "total_detections": 26,
+    "class_counts": {
+      "car": 10,
+      "motorcycle": 2,
+      "bicycle": 1,
+      "person": 12,
+      "bus": 1
+    },
+    "timestamp": "2026-05-24 07:36:57"
+  }
+]

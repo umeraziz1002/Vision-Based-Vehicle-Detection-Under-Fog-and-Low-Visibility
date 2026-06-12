@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Detect Vehicles — FogVision{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Detection</li>
+          </ol>
+        </nav>
+        <h1 class="page-title"><i class="bi bi-camera-video-fill me-3"></i>Vehicle Detection</h1>
+        <p class="page-subtitle">Upload an image or video to detect vehicles in foggy conditions</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+
+    <!-- ===== UPLOAD PANEL ===== -->
+    <div class="col-lg-7">
+      <div class="glass-card p-4">
+        <h5 class="card-section-title mb-4">
+          <i class="bi bi-cloud-upload-fill me-2 text-accent"></i>Upload Media
+        </h5>
+
+        <form id="uploadForm" action="{{ url_for('detection.upload_and_detect') }}"
+              method="POST" enctype="multipart/form-data">
+
+          <!-- Drop Zone -->
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-content" id="dropContent">
+              <div class="drop-icon">
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+              </div>
+              <h5 class="drop-title">Drag &amp; Drop your file here</h5>
+              <p class="drop-subtitle">or click to browse</p>
+              <p class="drop-formats">
+                <span class="format-badge">JPG</span>
+                <span class="format-badge">PNG</span>
+                <span class="format-badge">MP4</span>
+                <span class="format-badge">AVI</span>
+                <span class="format-badge">MOV</span>
+              </p>
+            </div>
+            <!-- Preview area (hidden until file selected) -->
+            <div class="drop-preview d-none" id="dropPreview">
+              <img id="previewImg" src="" alt="Preview" class="preview-img d-none" />
+              <video id="previewVid" class="preview-img d-none" controls muted></video>
+              <div class="preview-info mt-3">
+                <i class="bi bi-file-earmark-check-fill text-success me-2"></i>
+                <span id="previewName" class="fw-semibold"></span>
+                <span id="previewSize" class="ms-2 small" style="color:#9aa3b8;"></span>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="clearFile">
+                <i class="bi bi-x-circle me-1"></i>Remove
+              </button>
+            </div>
+            <input type="file" id="fileInput" name="file"
+                   accept=".jpg,.jpeg,.png,.bmp,.webp,.mp4,.avi,.mov,.mkv"
+                   class="d-none" />
+          </div>
+
+          <!-- Detection Settings -->
+          <div class="settings-panel mt-4">
+            <h6 class="settings-title">
+              <i class="bi bi-sliders me-2"></i>Detection Settings
+              <button type="button" class="btn btn-sm btn-link p-0 ms-2" data-bs-toggle="collapse"
+                      data-bs-target="#settingsCollapse">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </h6>
+            <div class="collapse show" id="settingsCollapse">
+              <div class="row g-3 mt-1">
+                <div class="col-sm-6">
+                  <label class="form-label small" style="color:#9aa3b8;">
+                    Confidence Threshold
+                    <span class="badge bg-accent ms-1" id="confVal">0.25</span>
+                  </label>
+                  <input type="range" class="form-range accent-range" name="confidence"
+                         id="confRange" min="0.1" max="0.9" step="0.05" value="0.25" />
+                  <div class="d-flex justify-content-between" style="color:#9aa3b8; font-size:0.78rem;">
+                    <span>Low (0.1)</span><span>High (0.9)</span>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label small" style="color:#9aa3b8;">
+                    IoU Threshold
+                    <span class="badge bg-accent ms-1" id="iouVal">0.45</span>
+                  </label>
+                  <input type="range" class="form-range accent-range" name="iou"
+                         id="iouRange" min="0.1" max="0.9" step="0.05" value="0.45" />
+                  <div class="d-flex justify-content-between" style="color:#9aa3b8; font-size:0.78rem;">
+                    <span>Low (0.1)</span><span>High (0.9)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="mt-4">
+            <button type="submit" class="btn btn-detect w-100" id="submitBtn" disabled>
+              <span class="btn-normal">
+                <i class="bi bi-lightning-charge-fill me-2"></i>Run Detection
+              </span>
+              <span class="btn-loading d-none">
+                <span class="spinner-border spinner-border-sm me-2"></span>Processing...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== INFO PANEL ===== -->
+    <div class="col-lg-5">
+      <!-- Quick Tips -->
+      <div class="glass-card p-4 mb-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-lightbulb-fill me-2 text-warning"></i>Tips for Best Results
+        </h5>
+        <ul class="tips-list">
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i>Use images with visible road scenes</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i>Higher confidence = fewer false positives</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i>Lower IoU = fewer overlapping boxes</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i>MP4 videos process faster than AVI</li>
+          <li><i class="bi bi-check-circle-fill text-success me-2"></i>Max file size: 100 MB</li>
+        </ul>
+      </div>
+
+      <!-- Webcam Option -->
+      <div class="glass-card p-4 mb-4 webcam-promo">
+        <div class="d-flex align-items-center gap-3">
+          <div class="webcam-icon">
+            <i class="bi bi-webcam-fill"></i>
+          </div>
+          <div>
+            <h6 class="mb-1 fw-bold">Try Live Webcam</h6>
+            <p class="mb-2 small" style="color:#9aa3b8;">Detect vehicles in real-time using your camera</p>
+            <a href="{{ url_for('detection.webcam') }}" class="btn btn-sm btn-outline-accent">
+              <i class="bi bi-play-fill me-1"></i>Open Webcam
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supported Formats -->
+      <div class="glass-card p-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-file-earmark-fill me-2 text-accent"></i>Supported Formats
+        </h5>
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="format-card">
+              <i class="bi bi-file-image text-info me-2"></i>
+              <span>Images</span>
+              <small class="d-block" style="color:#9aa3b8;">JPG, PNG, BMP, WEBP</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="format-card">
+              <i class="bi bi-file-play text-warning me-2"></i>
+              <span>Videos</span>
+              <small class="d-block" style="color:#9aa3b8;">MP4, AVI, MOV, MKV</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div class="loading-overlay d-none" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="loading-spinner">
+      <div class="spinner-ring"></div>
+      <div class="spinner-ring ring-2"></div>
+      <div class="spinner-ring ring-3"></div>
+      <i class="bi bi-eye-fill spinner-icon"></i>
+    </div>
+    <h5 class="loading-title mt-4">Analyzing Media</h5>
+    <p class="loading-subtitle" id="loadingMsg">Running YOLOv8 inference...</p>    <div class="loading-progress mt-3">
+      <div class="progress-bar-animated"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/detection.js') }}"></script>
+{% endblock %}

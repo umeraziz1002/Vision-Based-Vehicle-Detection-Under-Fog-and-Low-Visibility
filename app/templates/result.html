@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+{% block title %}Detection Results — FogVision{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('detection.detect_home') }}">Detection</a></li>
+        <li class="breadcrumb-item active">Results</li>
+      </ol>
+    </nav>
+    <h1 class="page-title"><i class="bi bi-check-circle-fill me-3 text-success"></i>Detection Results</h1>
+    <p class="page-subtitle">YOLOv8 analysis complete</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- ===== SUMMARY CARDS ===== -->
+  <div class="row g-3 mb-5">
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-bullseye"></i></div>
+        <div class="stat-number">{{ results.total_detections }}</div>
+        <div class="stat-label">Total Detections</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-tags-fill"></i></div>
+        <div class="stat-number">{{ results.class_counts | length }}</div>
+        <div class="stat-label">Vehicle Classes</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-stopwatch-fill"></i></div>
+        {% if file_type == 'image' %}
+        <div class="stat-number">{{ results.inference_time }}<small class="fs-6">ms</small></div>
+        <div class="stat-label">Inference Time</div>
+        {% else %}
+        <div class="stat-number">{{ results.processing_time }}<small class="fs-6">s</small></div>
+        <div class="stat-label">Processing Time</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-file-earmark-fill"></i></div>
+        <div class="stat-number text-capitalize">{{ file_type }}</div>
+        <div class="stat-label">File Type</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ===== MEDIA COMPARISON ===== -->
+    <div class="col-lg-8">
+      <div class="glass-card p-4">
+        <h5 class="card-section-title mb-4">
+          <i class="bi bi-images me-2 text-accent"></i>Detection Output
+        </h5>
+
+        <!-- Tab toggle -->
+        <ul class="nav nav-pills result-tabs mb-4" id="resultTabs">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#outputTab">
+              <i class="bi bi-eye-fill me-1"></i>Detected
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#originalTab">
+              <i class="bi bi-image me-1"></i>Original
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- Detected output -->
+          <div class="tab-pane fade show active" id="outputTab">
+            {% if file_type == 'image' %}
+            <div class="result-media-wrap">
+              <img src="{{ url_for('static', filename='processed/' + output_file) }}"
+                   alt="Detection Result" class="result-media" id="resultImg" />
+              <div class="media-overlay-badge">
+                <i class="bi bi-check-circle-fill me-1"></i>Detected
+              </div>
+            </div>
+            {% else %}
+            <div class="result-media-wrap">
+              <video class="result-media" controls>
+                <source src="{{ url_for('static', filename='processed/' + output_file) }}" type="video/mp4">
+                Your browser does not support video playback.
+              </video>
+              <div class="media-overlay-badge">
+                <i class="bi bi-check-circle-fill me-1"></i>Detected
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Original -->
+          <div class="tab-pane fade" id="originalTab">
+            {% if file_type == 'image' %}
+            <div class="result-media-wrap">
+              <img src="{{ url_for('static', filename='uploads/' + original_file) }}"
+                   alt="Original" class="result-media" />
+              <div class="media-overlay-badge badge-original">
+                <i class="bi bi-image me-1"></i>Original
+              </div>
+            </div>
+            {% else %}
+            <div class="result-media-wrap">
+              <video class="result-media" controls>
+                <source src="{{ url_for('static', filename='uploads/' + original_file) }}" type="video/mp4">
+              </video>
+              <div class="media-overlay-badge badge-original">
+                <i class="bi bi-image me-1"></i>Original
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Download button -->
+        <div class="mt-4 d-flex gap-3 flex-wrap">
+          <a href="{{ url_for('detection.download_result', filename=output_file) }}"
+             class="btn btn-detect">
+            <i class="bi bi-download me-2"></i>Download Result
+          </a>
+          <a href="{{ url_for('detection.detect_home') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-repeat me-2"></i>New Detection
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DETECTION DETAILS ===== -->
+    <div class="col-lg-4">
+
+      <!-- Class breakdown -->
+      <div class="glass-card p-4 mb-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-pie-chart-fill me-2 text-accent"></i>Class Breakdown
+        </h5>
+        {% if results.class_counts %}
+          {% for cls, count in results.class_counts.items() %}
+          <div class="class-row mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="class-name text-capitalize">
+                <i class="bi bi-car-front-fill me-2 text-accent"></i>{{ cls }}
+              </span>
+              <span class="class-count badge bg-accent">{{ count }}</span>
+            </div>
+            <div class="progress class-progress">
+              <div class="progress-bar bg-accent"
+                   style="width: {{ (count / results.total_detections * 100) | round(1) }}%">
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-3 text-muted">
+            <i class="bi bi-search fs-2 d-block mb-2"></i>
+            No vehicles detected
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Video-specific stats -->
+      {% if file_type == 'video' %}
+      <div class="glass-card p-4 mb-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-film me-2 text-accent"></i>Video Info
+        </h5>
+        <ul class="info-list">
+          <li>
+            <span class="info-key">Frames Processed</span>
+            <span class="info-val">{{ results.frames_processed }}</span>
+          </li>
+          <li>
+            <span class="info-key">Total Frames</span>
+            <span class="info-val">{{ results.total_frames }}</span>
+          </li>
+          <li>
+            <span class="info-key">Processing FPS</span>
+            <span class="info-val">{{ results.fps_processed }}</span>
+          </li>
+          <li>
+            <span class="info-key">Resolution</span>
+            <span class="info-val">{{ results.video_info.width }}×{{ results.video_info.height }}</span>
+          </li>
+          <li>
+            <span class="info-key">Source FPS</span>
+            <span class="info-val">{{ results.video_info.fps }}</span>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Image-specific stats -->
+      {% if file_type == 'image' %}
+      <div class="glass-card p-4 mb-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-image me-2 text-accent"></i>Image Info
+        </h5>
+        <ul class="info-list">
+          <li>
+            <span class="info-key">Resolution</span>
+            <span class="info-val">{{ results.image_size.width }}×{{ results.image_size.height }}</span>
+          </li>
+          <li>
+            <span class="info-key">Inference Time</span>
+            <span class="info-val">{{ results.inference_time }} ms</span>
+          </li>
+          <li>
+            <span class="info-key">Detections</span>
+            <span class="info-val">{{ results.total_detections }}</span>
+          </li>
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Per-detection list (images only) -->
+      {% if file_type == 'image' and results.detections %}
+      <div class="glass-card p-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-list-check me-2 text-accent"></i>All Detections
+        </h5>
+        <div class="detection-list">
+          {% for det in results.detections %}
+          <div class="detection-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="det-class text-capitalize">
+                <i class="bi bi-bounding-box me-2 text-accent"></i>{{ det.class }}
+              </span>
+              <span class="conf-badge
+                {% if det.confidence >= 80 %}conf-high
+                {% elif det.confidence >= 60 %}conf-mid
+                {% else %}conf-low{% endif %}">
+                {{ det.confidence }}%
+              </span>
+            </div>
+            <small style="color:#9aa3b8;">
+              Box: [{{ det.bbox[0] }}, {{ det.bbox[1] }}, {{ det.bbox[2] }}, {{ det.bbox[3] }}]
+            </small>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}About — FogVision{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title"><i class="bi bi-info-circle-fill me-3"></i>About This Project</h1>
+    <p class="page-subtitle">Final Year Project — BS Computer Science</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="glass-card p-5">
+        <h2 class="gradient-text mb-4">Vision-Based Vehicle Detection<br>under Fog and Low Visibility Conditions</h2>
+        <p class="lead text-muted">
+          This project addresses one of the most critical challenges in intelligent transportation systems —
+          detecting vehicles accurately when visibility is severely reduced due to fog, haze, rain, or night conditions.
+        </p>
+        <hr class="border-secondary my-4" />
+        <h5 class="fw-bold mb-3">Project Objectives</h5>
+        <ul class="about-list">
+          <li>Develop a robust vehicle detection system using YOLOv8 deep learning</li>
+          <li>Handle foggy and low-visibility road environments effectively</li>
+          <li>Provide a user-friendly web interface for real-time detection</li>
+          <li>Support image, video, and live webcam detection modes</li>
+          <li>Expose REST API endpoints for future mobile app integration</li>
+        </ul>
+        <hr class="border-secondary my-4" />
+        <h5 class="fw-bold mb-3">Technology Stack</h5>
+        <div class="row g-3">
+          {% set stack = [
+            ('YOLOv8 (Ultralytics)', 'Object detection model', 'bi-cpu-fill', 'text-accent'),
+            ('OpenCV', 'Image & video processing', 'bi-camera-video-fill', 'text-info'),
+            ('Flask (Python)', 'Web backend framework', 'bi-server', 'text-warning'),
+            ('Bootstrap 5', 'Responsive frontend', 'bi-bootstrap-fill', 'text-purple'),
+            ('REST API', 'Mobile integration ready', 'bi-braces', 'text-success'),
+          ] %}
+          {% for name, desc, icon, color in stack %}
+          <div class="col-sm-6">
+            <div class="tech-item d-flex align-items-center gap-3">
+              <i class="bi {{ icon }} {{ color }} fs-4"></i>
+              <div>
+                <div class="fw-semibold">{{ name }}</div>
+                <small style="color:#9aa3b8;">{{ desc }}</small>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="glass-card p-4 mb-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-person-fill me-2 text-accent"></i>Project Info
+        </h5>
+        <ul class="info-list">
+          <li><span class="info-key">Degree</span><span class="info-val">BS Computer Science</span></li>
+          <li><span class="info-key">Type</span><span class="info-val">Final Year Project</span></li>
+          <li><span class="info-key">Model</span><span class="info-val">YOLOv8 Custom</span></li>
+          <li><span class="info-key">Backend</span><span class="info-val">Flask + Python</span></li>
+          <li><span class="info-key">API</span><span class="info-val">REST v1</span></li>
+        </ul>
+      </div>
+
+      <div class="glass-card p-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-link-45deg me-2 text-accent"></i>API Endpoints
+        </h5>
+        <ul class="api-list">
+          <li><code>GET /api/v1/health</code></li>
+          <li><code>POST /api/v1/detect/image</code></li>
+          <li><code>POST /api/v1/detect/video</code></li>
+          <li><code>GET /api/v1/stats</code></li>
+          <li><code>GET /api/v1/history</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,478 @@
+{% extends "base.html" %}
+{% block title %}FogVision — AI Vehicle Detection System{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section">
+  <!-- Animated fog particles -->
+  <div class="fog-overlay"></div>
+  <div class="hero-particles" id="particles"></div>
+
+  <div class="container hero-content">
+    <div class="row align-items-center min-vh-100">
+      <div class="col-lg-7">
+        <div class="hero-badge mb-3">
+          <i class="bi bi-cpu-fill me-2"></i>YOLOv8 Deep Learning
+        </div>
+        <h1 class="hero-title">
+          Vehicle Detection<br>
+          <span class="gradient-text">Under Fog &amp;</span><br>
+          <span class="gradient-text">Low Visibility</span>
+        </h1>
+        <p class="hero-subtitle mt-4">
+          An AI-powered intelligent transportation system that detects vehicles
+          in foggy and adverse weather conditions using state-of-the-art
+          YOLOv8 deep learning technology.
+        </p>
+        <div class="hero-actions mt-5 d-flex flex-wrap gap-3">
+          <a href="{{ url_for('detection.detect_home') }}" class="btn btn-hero-primary">
+            <i class="bi bi-lightning-charge-fill me-2"></i>Start Detection
+          </a>
+          <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-hero-secondary">
+            <i class="bi bi-speedometer2 me-2"></i>View Dashboard
+          </a>
+        </div>
+
+        <!-- Stats row -->
+        <div class="hero-stats mt-5 d-flex flex-wrap gap-4">
+          <div class="hero-stat">
+            <span class="stat-value">YOLOv8</span>
+            <span class="stat-label">Model</span>
+          </div>
+          <div class="hero-stat">
+            <span class="stat-value">Real-Time</span>
+            <span class="stat-label">Inference</span>
+          </div>
+          <div class="hero-stat">
+            <span class="stat-value">Multi-Class</span>
+            <span class="stat-label">Detection</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-5 d-none d-lg-flex justify-content-center align-items-center">
+        <div class="hero-visual">
+          <!-- Foggy Road Detection Demo — SVG + Canvas illustration -->
+          <div class="demo-card">
+            <!-- Header bar -->
+            <div class="demo-header">
+              <div class="demo-dot dot-red"></div>
+              <div class="demo-dot dot-yellow"></div>
+              <div class="demo-dot dot-green"></div>
+              <span class="demo-header-title">
+                <i class="bi bi-eye-fill me-1"></i> FogVision Detection
+              </span>
+              <span class="demo-live-pill">
+                <span class="demo-live-dot"></span>LIVE
+              </span>
+            </div>
+
+            <!-- Road scene -->
+            <div class="demo-scene">
+              <canvas id="heroCanvas" width="400" height="260"></canvas>
+
+              <!-- Overlay labels — positioned via CSS -->
+              <div class="demo-label-wrap">
+                <div class="demo-det-label lbl-car" id="lblCar">
+                  <span class="lbl-cls">Car</span>
+                  <span class="lbl-conf conf-hi">94%</span>
+                </div>
+                <div class="demo-det-label lbl-truck" id="lblTruck">
+                  <span class="lbl-cls">Truck</span>
+                  <span class="lbl-conf conf-mid">87%</span>
+                </div>
+                <div class="demo-det-label lbl-bus" id="lblBus">
+                  <span class="lbl-cls">Bus</span>
+                  <span class="lbl-conf conf-hi">91%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats bar at bottom -->
+            <div class="demo-stats-bar">
+              <div class="demo-stat-item">
+                <i class="bi bi-bullseye text-accent"></i>
+                <span id="demoCount">3</span> detected
+              </div>
+              <div class="demo-stat-item">
+                <i class="bi bi-stopwatch text-warning"></i>
+                <span id="demoMs">24</span> ms
+              </div>
+              <div class="demo-stat-item">
+                <i class="bi bi-cloud-fog2-fill" style="color:#7b2ff7;"></i>
+                Dehazed
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator">
+    <i class="bi bi-chevron-double-down"></i>
+  </div>
+</section>
+
+<!-- ===== FEATURES SECTION ===== -->
+<section class="features-section py-5">
+  <div class="container py-4">
+    <div class="section-header text-center mb-5">
+      <span class="section-badge">Capabilities</span>
+      <h2 class="section-title mt-2">What FogVision Can Do</h2>
+      <p class="section-subtitle">Advanced vehicle detection powered by deep learning</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card h-100">
+          <div class="feature-icon">
+            <i class="bi bi-image-fill"></i>
+          </div>
+          <h5 class="feature-title">Image Detection</h5>
+          <p class="feature-desc">Upload JPG or PNG images and get instant vehicle detection with bounding boxes and confidence scores.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card h-100">
+          <div class="feature-icon">
+            <i class="bi bi-film"></i>
+          </div>
+          <h5 class="feature-title">Video Analysis</h5>
+          <p class="feature-desc">Process MP4 and AVI videos frame-by-frame to detect and track vehicles throughout the footage.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card h-100">
+          <div class="feature-icon">
+            <i class="bi bi-webcam-fill"></i>
+          </div>
+          <h5 class="feature-title">Live Webcam</h5>
+          <p class="feature-desc">Real-time detection using your webcam feed with live bounding boxes and class labels.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="feature-card h-100">
+          <div class="feature-icon">
+            <i class="bi bi-bar-chart-fill"></i>
+          </div>
+          <h5 class="feature-title">Analytics Dashboard</h5>
+          <p class="feature-desc">Track detection history, view statistics, and monitor performance across all processed files.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-section py-5">
+  <div class="container py-4">
+    <div class="section-header text-center mb-5">
+      <span class="section-badge">Workflow</span>
+      <h2 class="section-title mt-2">How It Works</h2>
+      <p class="section-subtitle">Three simple steps to detect vehicles in foggy conditions</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="step-card text-center">
+          <div class="step-number">01</div>
+          <div class="step-icon"><i class="bi bi-cloud-upload-fill"></i></div>
+          <h5 class="step-title">Upload Media</h5>
+          <p class="step-desc">Upload a foggy road image or video file from your device.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card text-center">
+          <div class="step-number">02</div>
+          <div class="step-icon"><i class="bi bi-cpu-fill"></i></div>
+          <h5 class="step-title">AI Processing</h5>
+          <p class="step-desc">YOLOv8 model analyzes each frame and identifies vehicles.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="step-card text-center">
+          <div class="step-number">03</div>
+          <div class="step-icon"><i class="bi bi-download"></i></div>
+          <h5 class="step-title">View &amp; Download</h5>
+          <p class="step-desc">Review annotated results and download the processed output.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="{{ url_for('detection.detect_home') }}" class="btn btn-hero-primary btn-lg">
+        <i class="bi bi-play-circle-fill me-2"></i>Try It Now
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TECH STACK ===== -->
+<section class="tech-section py-5">
+  <div class="container py-4">
+    <div class="section-header text-center mb-5">
+      <span class="section-badge">Technology</span>
+      <h2 class="section-title mt-2">Built With</h2>
+    </div>
+    <div class="row g-3 justify-content-center">
+      {% set techs = [
+        ('bi-lightning-fill', 'YOLOv8', 'Ultralytics'),
+        ('bi-camera-video-fill', 'OpenCV', 'Computer Vision'),
+        ('bi-server', 'Flask', 'Python Backend'),
+        ('bi-bootstrap-fill', 'Bootstrap 5', 'Responsive UI'),
+        ('bi-braces', 'REST API', 'Mobile Ready'),
+        ('bi-gpu-card', 'Deep Learning', 'Neural Network'),
+      ] %}
+      {% for icon, name, desc in techs %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="tech-card text-center">
+          <i class="bi {{ icon }} tech-icon"></i>
+          <div class="tech-name">{{ name }}</div>
+          <div class="tech-desc">{{ desc }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/**
+ * Hero canvas — animated foggy road scene with detection bounding boxes.
+ * Draws a perspective road, 3 vehicles, animated fog, scan line, and pulsing boxes.
+ */
+(function () {
+  const canvas = document.getElementById('heroCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;   // 400
+  const H = canvas.height;  // 260
+
+  const vehicles = [
+    { x: 30,  y: 110, w: 110, h: 70,  color: '#4a9eff', label: 'Car',   conf: '94%', phase: 0   },
+    { x: 175, y: 95,  w: 125, h: 85,  color: '#ffb830', label: 'Truck', conf: '87%', phase: 0.7 },
+    { x: 315, y: 112, w: 80,  h: 65,  color: '#2ecc71', label: 'Bus',   conf: '91%', phase: 1.4 },
+  ];
+
+  let tick = 0;
+  let scanY = 0;
+
+  function drawRoad() {
+    // Sky — deep foggy night blue
+    const sky = ctx.createLinearGradient(0, 0, 0, H * 0.56);
+    sky.addColorStop(0, '#0d1625');
+    sky.addColorStop(1, '#1e2e48');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, W, H * 0.56);
+
+    // Tarmac — perspective trapezoid
+    const tarmac = ctx.createLinearGradient(0, H * 0.5, 0, H);
+    tarmac.addColorStop(0, '#1a2235');
+    tarmac.addColorStop(1, '#0d1220');
+    ctx.fillStyle = tarmac;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    ctx.lineTo(W, H);
+    ctx.lineTo(W * 0.73, H * 0.5);
+    ctx.lineTo(W * 0.27, H * 0.5);
+    ctx.closePath();
+    ctx.fill();
+
+    // Horizon fog blend
+    const hBlend = ctx.createLinearGradient(0, H * 0.44, 0, H * 0.58);
+    hBlend.addColorStop(0, 'rgba(30,46,72,0)');
+    hBlend.addColorStop(1, 'rgba(26,34,53,0.95)');
+    ctx.fillStyle = hBlend;
+    ctx.fillRect(0, H * 0.44, W, H * 0.14);
+
+    // White lane markings (dashes, perspective)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([12, 10]);
+    // Centre
+    ctx.beginPath(); ctx.moveTo(W * 0.5, H * 0.5); ctx.lineTo(W * 0.5, H); ctx.stroke();
+    ctx.setLineDash([]);
+    // Kerb lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(W * 0.27, H * 0.5); ctx.lineTo(0, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W * 0.73, H * 0.5); ctx.lineTo(W, H); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawFog() {
+    // Very subtle fog — just enough to show the hazy atmosphere
+    // kept light so vehicles remain clearly visible
+    const t = tick * 0.004;
+    const layers = [
+      { ox: 0.35, oy: 0.35, r: 0.60, a: 0.04 },
+      { ox: 0.65, oy: 0.40, r: 0.50, a: 0.03 },
+    ];
+    layers.forEach((l, i) => {
+      const gx = (Math.sin(t + i * 1.3) * 0.08 + l.ox) * W;
+      const gy = l.oy * H;
+      const fog = ctx.createRadialGradient(gx, gy, 5, gx, gy, l.r * W);
+      fog.addColorStop(0,   `rgba(160,190,230,${l.a})`);
+      fog.addColorStop(0.6, `rgba(120,160,210,${l.a * 0.3})`);
+      fog.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = fog;
+      ctx.fillRect(0, 0, W, H);
+    });
+  }
+
+  function drawVehicle(v) {
+    const { x, y, w, h, color } = v;
+    const r = 6;
+
+    // ── Main body — solid bright fill ─────────────────────────────────────
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y,     x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x,     y + h, r);
+    ctx.arcTo(x,     y + h, x,     y,     r);
+    ctx.arcTo(x,     y,     x + w, y,     r);
+    ctx.closePath();
+    ctx.fill();
+
+    // ── Subtle top highlight ───────────────────────────────────────────────
+    const hiGrad = ctx.createLinearGradient(x, y, x, y + h * 0.5);
+    hiGrad.addColorStop(0,   'rgba(255,255,255,0.25)');
+    hiGrad.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.fillStyle = hiGrad;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h * 0.5, r);
+    ctx.lineTo(x + w, y + h * 0.5);
+    ctx.lineTo(x, y + h * 0.5);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fill();
+
+    // ── Windshield (dark tinted) ───────────────────────────────────────────
+    ctx.fillStyle = 'rgba(10,20,40,0.65)';
+    ctx.fillRect(x + w * 0.14, y + 6, w * 0.52, h * 0.40);
+
+    // ── Thin outline so body pops against road ────────────────────────────
+    ctx.strokeStyle = 'rgba(255,255,255,0.20)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y,     x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x,     y + h, r);
+    ctx.arcTo(x,     y + h, x,     y,     r);
+    ctx.arcTo(x,     y,     x + w, y,     r);
+    ctx.closePath();
+    ctx.stroke();
+
+    // ── Wheels ────────────────────────────────────────────────────────────
+    ctx.fillStyle = '#111827';
+    [[x + 16, y + h - 5], [x + w - 16, y + h - 5]].forEach(([tx, ty]) => {
+      ctx.beginPath(); ctx.ellipse(tx, ty, 10, 6, 0, 0, Math.PI * 2); ctx.fill();
+      // Rim
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.ellipse(tx, ty, 5, 3, 0, 0, Math.PI * 2); ctx.stroke();
+    });
+
+    // ── Headlights ────────────────────────────────────────────────────────
+    [[x + 10, y + h - 14], [x + w - 10, y + h - 14]].forEach(([lx, ly]) => {
+      // Bright white core
+      ctx.fillStyle = '#fffde0';
+      ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2); ctx.fill();
+      // Yellow glow
+      const glow = ctx.createRadialGradient(lx, ly, 0, lx, ly, 22);
+      glow.addColorStop(0,   'rgba(255,240,80,0.40)');
+      glow.addColorStop(1,   'rgba(255,240,80,0)');
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(lx, ly, 22, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
+  function drawBbox(v) {
+    const { x, y, w, h, color, label, conf, phase } = v;
+    const pulse = 0.5 + 0.5 * Math.sin(tick * 0.055 + phase);
+    const alpha = 0.5 + 0.5 * pulse;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    // Outer dashed rect
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([5, 4]);
+    ctx.strokeRect(x - 5, y - 5, w + 10, h + 10);
+    ctx.setLineDash([]);
+
+    // Corner brackets — solid, brighter
+    ctx.globalAlpha = 0.7 + 0.3 * pulse;
+    ctx.lineWidth = 2.5;
+    const cs = 9;
+    [
+      [x - 5, y - 5,   1,  1],
+      [x+w+5, y - 5,  -1,  1],
+      [x - 5, y+h+5,   1, -1],
+      [x+w+5, y+h+5,  -1, -1],
+    ].forEach(([cx, cy, dx, dy]) => {
+      ctx.beginPath();
+      ctx.moveTo(cx, cy + dy * cs);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx + dx * cs, cy);
+      ctx.stroke();
+    });
+
+    ctx.restore();
+  }
+
+  function drawScanLine() {
+    scanY += 1.4;
+    if (scanY > H) scanY = 0;
+    const g = ctx.createLinearGradient(0, scanY - 8, 0, scanY + 8);
+    g.addColorStop(0,   'rgba(0,212,255,0)');
+    g.addColorStop(0.5, 'rgba(0,212,255,0.45)');
+    g.addColorStop(1,   'rgba(0,212,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, scanY - 8, W, 16);
+  }
+
+  function adjustBrightness(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    const clamp = v => Math.max(0, Math.min(255, v));
+    const r = clamp((n >> 16) + amt);
+    const g = clamp(((n >> 8) & 0xff) + amt);
+    const b = clamp((n & 0xff) + amt);
+    return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+  }
+
+  // Animate ms readout
+  const demoMs = document.getElementById('demoMs');
+  let msTimer = 0;
+  function updateStats() {
+    if (++msTimer % 80 === 0 && demoMs) {
+      demoMs.textContent = (16 + Math.floor(Math.random() * 16)).toString();
+    }
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, W, H);
+    drawRoad();
+    drawFog();          // fog UNDER vehicles
+    vehicles.forEach(drawVehicle);
+    drawScanLine();
+    vehicles.forEach(drawBbox);
+    updateStats();
+    tick++;
+    requestAnimationFrame(render);
+  }
+
+  render();
+})();
+</script>
+{% endblock %}

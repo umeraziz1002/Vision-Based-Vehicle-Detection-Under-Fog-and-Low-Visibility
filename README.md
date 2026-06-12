@@ -1,91 +1,145 @@
-# Vision-Based-Vehicle-Detection-Under-Fog-and-Low-Visibility
-A deep learning-based vehicle detection system for foggy and low-visibility environments using YOLO and image enhancement techniques. Designed for intelligent transportation systems, autonomous driving, and traffic monitoring.
+# FogVision — Vision-Based Vehicle Detection under Fog and Low Visibility Conditions
+ 
+> AI-powered vehicle detection system using YOLOv8 deep learning
 
+---
 
-## Overview
+## Project Overview
 
-This project presents a deep learning-based vehicle detection system designed for foggy and low-visibility environments. The system enhances visibility through image preprocessing and dehazing techniques before performing vehicle detection using YOLO.
+FogVision is a Flask-based web application that detects vehicles in foggy and low-visibility road environments using a custom-trained YOLOv8 model. It supports image upload, video processing, and live webcam detection, with a professional dashboard and REST API.
 
-The objective is to improve detection accuracy in adverse weather conditions while maintaining low deployment cost using standard cameras instead of expensive sensors such as LiDAR. 
+---
 
 ## Features
 
-- Vehicle detection in foggy environments
-- Image dehazing and enhancement
-- Real-time detection
-- False detection filtering
-- Performance evaluation using:
-  - Precision
-  - Recall
-  - F1-Score
-  - mAP
+- **Image Detection** — Upload JPG/PNG images, get annotated output with bounding boxes
+- **Video Detection** — Process MP4/AVI videos frame-by-frame
+- **Live Webcam** — Real-time camera feed with frame capture and server-side inference
+- **Dashboard** — Detection history, statistics, and class analytics
+- **REST API** — Full API for mobile/external integration
+- **Download Results** — Save annotated images and videos
 
-## Technologies Used
+---
 
-- Python
-- OpenCV
-- PyTorch
-- YOLO
-- Google Colab
-- Flutter
-- Django
-- WinUI
+## Project Structure
 
-## System Pipeline
+```
+FoggyWebsite/
+├── run.py                    # App entry point
+├── best.pt                   # YOLOv8 trained model weights
+├── requirements.txt
+├── README.md
+└── app/
+    ├── __init__.py           # App factory
+    ├── config.py             # Configuration
+    ├── models/
+    │   └── detector.py       # YOLOv8 detector class
+    ├── routes/
+    │   ├── main.py           # Home & About routes
+    │   ├── detection.py      # Upload & detection routes
+    │   └── dashboard.py      # Dashboard route
+    ├── api/
+    │   └── endpoints.py      # REST API endpoints
+    ├── utils/
+    │   └── file_utils.py     # File handling & history logging
+    ├── templates/
+    │   ├── base.html
+    │   ├── index.html
+    │   ├── detection.html
+    │   ├── result.html
+    │   ├── dashboard.html
+    │   ├── webcam.html
+    │   └── about.html
+    └── static/
+        ├── css/style.css
+        ├── js/
+        │   ├── main.js
+        │   ├── detection.js
+        │   └── webcam.js
+        ├── uploads/          # Uploaded files (auto-created)
+        ├── processed/        # Detection outputs (auto-created)
+        └── logs/             # Detection history JSON (auto-created)
+```
 
-Camera Input
-      ↓
-Image Enhancement / Dehazing
-      ↓
-YOLO Detection Model
-      ↓
-False Detection Filtering
-      ↓
-Performance Evaluation
-      ↓
-Result Visualization
+---
 
-## Dataset
+## Setup & Installation
 
-The dataset consists of vehicle images captured under:
-- Fog
-- Low Visibility
-- Adverse Weather Conditions
+### 1. Clone / navigate to the project folder
 
-## Results
+```bash
+cd "d:\Semester 7\FYP\FoggyWebsite"
+```
 
-| Metric | Value |
-|----------|--------|
-| Precision | XX |
-| Recall | XX |
-| mAP@50 | XX |
-| FPS | XX |
+### 3. Install dependencies
 
-## Applications
+```bash
+pip install -r requirements.txt
+```
 
-- Intelligent Transportation Systems
-- Driver Assistance Systems
-- Autonomous Vehicles
-- Traffic Monitoring
+### 4. Ensure model weights are present
 
-## Team
+The file `best.pt` should be in the root directory (`FoggyWebsite/best.pt`).
 
-### Umer Aziz
-- Detection Model Design
-- Training & Fine-tuning
-- Performance Optimization
-- Evaluation & Analysis
+### 5. Run the application
 
-### Ahsanullah
-- Literature Review
-- Data Collection
-- Dataset Preparation
-- Image Enhancement & Dehazing
+```bash
+python run.py
+```
 
-## Supervisor
+Open your browser at: **http://localhost:5000**
 
-Mr. Ali Nawaz Abbasi
+---
+
+## REST API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/health` | Health check |
+| POST | `/api/v1/detect/image` | Detect vehicles in image |
+| POST | `/api/v1/detect/video` | Detect vehicles in video |
+| GET | `/api/v1/stats` | Detection statistics |
+| GET | `/api/v1/history` | Detection history |
+
+### Example API call (Python)
+
+```python
+import requests
+
+with open('foggy_road.jpg', 'rb') as f:
+    response = requests.post(
+        'http://localhost:5000/api/v1/detect/image',
+        files={'file': f},
+        data={'confidence': 0.25, 'iou': 0.45}
+    )
+    print(response.json())
+```
+
+---
+
+## Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Backend | Flask 3.0 (Python) |
+| Deep Learning | YOLOv8 (Ultralytics) |
+| Computer Vision | OpenCV |
+| Frontend | Bootstrap 5, HTML5, CSS3, JavaScript |
+| API | REST (JSON) |
+
+---
+
+## Configuration
+
+Edit `app/config.py` to adjust:
+
+- `CONFIDENCE_THRESHOLD` — Default detection confidence (0.25)
+- `IOU_THRESHOLD` — Default IoU for NMS (0.45)
+- `MAX_CONTENT_LENGTH` — Max upload size (100 MB)
+- `MODEL_PATH` — Path to YOLOv8 weights
+
+---
 
 ## License
 
-MIT License
+Final Year Project — For academic use only.

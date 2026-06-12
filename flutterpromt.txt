@@ -1,0 +1,326 @@
+Build a complete Flutter mobile application for a Final Year Project titled:
+"Vision-Based Vehicle Detection under Fog and Low Visibility Conditions"
+
+The app is the mobile companion to an existing Flask web backend with REST API
+endpoints already deployed. The UI must be pixel-perfect consistent with the
+existing web app design system described below.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN SYSTEM — Match these exactly
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+COLORS:
+  bgPrimary:    Color(0xFF0A0E1A)   // main background
+  bgSecondary:  Color(0xFF0F1628)   // card/section background
+  bgCard:       Color(0x0AFFFFFF)   // glass card fill (4% white)
+  bgCardHover:  Color(0x12FFFFFF)   // card pressed state (7% white)
+  borderColor:  Color(0x14FFFFFF)   // borders (8% white)
+  accent:       Color(0xFF00D4FF)   // primary cyan accent
+  accentDark:   Color(0xFF0099BB)   // darker cyan
+  accentGlow:   Color(0x4000D4FF)   // glow shadow (25% cyan)
+  textPrimary:  Color(0xFFE8EAF0)   // main text
+  textMuted:    Color(0xFF9AA3B8)   // secondary/hint text
+  success:      Color(0xFF00E676)   // green
+  warning:      Color(0xFFFFAB40)   // orange
+  danger:       Color(0xFFFF5252)   // red
+  gradientStart: Color(0xFF00D4FF)  // cyan
+  gradientEnd:   Color(0xFF7B2FF7)  // purple
+
+GRADIENT:
+  LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF00D4FF), Color(0xFF7B2FF7)],
+  )
+  Use this gradient on: primary buttons, active nav items,
+  brand logo icon, progress indicators, detection badges.
+
+TYPOGRAPHY:
+  Primary font: 'Inter' (Google Fonts)
+  Brand font:   'Orbitron' (Google Fonts) — use only for app name/logo
+  
+  Text styles:
+    displayLarge:  Inter, 32sp, weight 800, color textPrimary
+    headlineMedium: Inter, 22sp, weight 700, color textPrimary
+    titleMedium:   Inter, 16sp, weight 600, color textPrimary
+    bodyMedium:    Inter, 14sp, weight 400, color textPrimary
+    bodySmall:     Inter, 12sp, weight 400, color textMuted
+    labelSmall:    Inter, 11sp, weight 600, color textMuted, letterSpacing 0.5
+
+SHAPE / RADIUS:
+  cardRadius:   16.0
+  chipRadius:   10.0
+  buttonRadius: 50.0 (pill shape)
+  badgeRadius:  4.0
+
+ELEVATION / SHADOWS:
+  cardShadow: BoxShadow(color: Color(0x660000000), blurRadius: 32, offset: Offset(0,8))
+  glowShadow: BoxShadow(color: Color(0x2600D4FF), blurRadius: 30, spreadRadius: 0)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROJECT STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+lib/
+├── main.dart
+├── app.dart                    # MaterialApp + theme
+├── core/
+│   ├── theme/
+│   │   ├── app_colors.dart     # all Color constants above
+│   │   ├── app_text_styles.dart
+│   │   └── app_theme.dart      # ThemeData
+│   ├── constants/
+│   │   └── api_constants.dart  # base URL, endpoints
+│   └── utils/
+│       └── file_utils.dart     # file size formatter, extension checker
+├── data/
+│   ├── models/
+│   │   ├── detection_result.dart
+│   │   └── history_item.dart
+│   └── services/
+│       └── api_service.dart    # HTTP calls to Flask REST API
+├── features/
+│   ├── home/
+│   │   └── home_screen.dart
+│   ├── detection/
+│   │   ├── detection_screen.dart
+│   │   └── result_screen.dart
+│   ├── dashboard/
+│   │   └── dashboard_screen.dart
+│   └── about/
+│       └── about_screen.dart
+└── shared/
+    ├── widgets/
+    │   ├── glass_card.dart
+    │   ├── gradient_button.dart
+    │   ├── section_badge.dart
+    │   ├── stat_card.dart
+    │   ├── detection_badge.dart
+    │   └── app_bottom_nav.dart
+    └── animations/
+        └── fade_slide_animation.dart
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCREENS — Full specification
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. HOME SCREEN
+   - Full-screen dark background (bgPrimary)
+   - Top section: animated radial gradient glow (cyan top-left, purple top-right)
+     using AnimatedContainer or CustomPainter
+   - App logo: gradient icon box (eye icon) + "Fog" + "Vision" in Orbitron,
+     "Vision" in accent cyan color
+   - Hero badge pill: "YOLOv8 Deep Learning" with cyan border and background
+   - Title: "Vehicle Detection\nUnder Fog &\nLow Visibility" — large bold Inter,
+     last two lines use ShaderMask with the gradient
+   - Subtitle paragraph in textMuted color
+   - Two CTA buttons side by side:
+       Primary: gradient pill button "Start Detection" with glow shadow
+       Secondary: outlined pill button "View Dashboard" with borderColor border
+   - Stats row: 3 items (YOLOv8 / Real-Time / Multi-Class) with accent value
+     and muted label
+   - Features section (scrollable): 4 glass cards in a 2×2 grid
+       Each card: gradient icon box, bold title, muted description
+       Cards: Image Detection, Video Analysis, Live Camera, Analytics
+   - How It Works: 3 step cards in a horizontal scroll
+       Each: large faded step number (Orbitron, 10% cyan), icon, title, desc
+   - Bottom navigation bar (see shared widget spec below)
+
+2. DETECTION SCREEN
+   - Page header with breadcrumb and title "Vehicle Detection"
+   - Upload area (GestureDetector):
+       Dashed border (borderColor), rounded 16, bgCard fill
+       Center: gradient upload icon, "Tap to select file" title, muted subtitle
+       Format chips: JPG PNG MP4 AVI MOV — small cyan bordered chips
+       After file selected: show thumbnail preview (image) or video icon,
+       filename and formatted file size in textMuted
+       "Remove" outlined button
+   - Settings panel (ExpansionTile styled as glass card):
+       Title "Detection Settings" with sliders icon
+       Confidence slider: accent-colored Slider widget, value badge
+       IoU slider: same style
+       Both show current value in a small gradient badge
+   - "Run Detection" gradient pill button — full width, disabled until file selected
+   - Tips card (glass card): 5 bullet points with green check icons
+   - Webcam/Camera card: gradient icon, title, description, outlined button
+   - Supported formats card: 2-column grid showing image and video formats
+   - Loading state: full-screen overlay with:
+       3 concentric spinning rings (use AnimationController)
+       Eye icon in center
+       "Analyzing Media" title
+       Animated progress bar using gradient
+
+3. RESULT SCREEN
+   - 4 summary stat cards in a 2×2 grid:
+       Total Detections, Vehicle Classes, Inference Time, File Type
+       Each: accent icon, large number, muted uppercase label
+   - Tab bar (custom pill tabs, not default Flutter TabBar):
+       "Detected" tab (gradient when active) | "Original" tab
+       Show respective image/video below
+       "Processed" badge overlay on detected image (green)
+       "Original" badge overlay (orange)
+   - Download button (gradient) + "New Detection" outlined button
+   - Class Breakdown card:
+       For each detected class: name left, count badge right,
+       LinearProgressIndicator with gradient color
+   - Image/Video Info card: key-value list rows with dividers
+   - All Detections list (image only):
+       Each row: class name with bounding-box icon, confidence badge
+       Badge color: green ≥80%, orange ≥60%, red <60%
+       Bbox coordinates in small muted text
+
+4. DASHBOARD SCREEN
+   - 4 stat cards in a 2×2 grid (same style as result screen)
+       Total Files, Total Detections, Images, Videos
+       Each has a large faded icon on the right side
+   - Recent Detections list:
+       Each item: type badge (Image=cyan / Video=orange), detection count,
+       class breakdown chips, timestamp, download icon button
+       Separated by subtle dividers
+   - Vehicle Classes bar chart:
+       Custom painted horizontal bars using gradient color
+       Class name left, count right, animated fill on screen entry
+   - Quick Actions card:
+       3 buttons stacked: Upload & Detect (gradient), Live Camera (outlined),
+       API Stats (secondary outlined)
+
+5. ABOUT SCREEN
+   - Project title with gradient text ShaderMask
+   - Lead paragraph in textMuted
+   - Divider (borderColor)
+   - Objectives: bulleted list with accent bullet points
+   - Tech Stack: 2-column grid of tech items
+       Each: colored icon, bold name, muted description
+   - Project Info: key-value list (Degree, Type, Model, Backend, API)
+   - API Endpoints: monospace code chips in accent color on dark bg
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SHARED WIDGETS — Implement as reusable components
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GlassCard:
+  Container with bgCard fill, 1px borderColor border,
+  borderRadius 16, cardShadow. Optional onTap with bgCardHover
+  pressed state using InkWell.
+
+GradientButton:
+  Full-width or auto-width pill button.
+  Background: LinearGradient (cyan→purple).
+  Text: white, Inter 15sp weight 600.
+  BoxShadow: glowShadow.
+  Disabled: 50% opacity.
+  Loading state: shows CircularProgressIndicator (white, size 18).
+
+SectionBadge:
+  Small pill with 10% cyan background, cyan border,
+  uppercase text in accent color, Inter 11sp weight 600.
+
+StatCard:
+  GlassCard with: icon (accent color), large number (textPrimary,
+  Inter 28sp bold), label (textMuted, uppercase 11sp).
+  Optional accent border variant.
+
+DetectionBadge (confidence):
+  Pill badge. Green bg+text if ≥80%, orange if ≥60%, red if <60%.
+
+AppBottomNav:
+  Custom BottomNavigationBar with bgSecondary background,
+  borderColor top border. 4 items: Home, Detect, Dashboard, About.
+  Active item: gradient icon + accent label.
+  Inactive: textMuted icon and label.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+API INTEGRATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Base URL: configurable in api_constants.dart (default http://10.0.2.2:5000
+for Android emulator, http://localhost:5000 for iOS simulator)
+
+Endpoints:
+  GET  /api/v1/health              → health check on app start
+  POST /api/v1/detect/image        → multipart/form-data: file, confidence, iou
+  POST /api/v1/detect/video        → multipart/form-data: file, confidence, iou
+  GET  /api/v1/stats               → dashboard statistics
+  GET  /api/v1/history?limit=20    → recent detections list
+
+Use the http package (not dio) for simplicity.
+Show SnackBar on API errors with danger color background.
+Show loading overlay (full-screen) during detection requests.
+
+DetectionResult model:
+  success, fileType, originalFile, outputFile, outputUrl, results{
+    totalDetections, detections[{class, confidence, bbox}],
+    classCounts{}, inferenceTime, imageSize{width,height}
+  }
+
+HistoryItem model:
+  fileType, originalFile, outputFile, totalDetections,
+  classCounts{}, timestamp, source
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- FadeSlideAnimation widget: wraps any child, slides up 20px + fades in
+  on mount using AnimationController + CurvedAnimation (Curves.easeOut, 400ms)
+  with optional delay parameter for staggered entrance
+- Stat numbers animate from 0 to target value on screen entry
+  using Tween<int> + AnimationController (600ms, Curves.easeOut)
+- Detection bounding box demo on home screen: 3 boxes pulse opacity
+  using AnimationController with repeat(reverse: true)
+- Scan line on home demo: slides top→bottom using AnimationController
+  with repeat, drawn via CustomPainter
+- Progress bar on loading overlay: animated shimmer using gradient
+  and AnimationController
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PUBSPEC DEPENDENCIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.1        # Inter + Orbitron
+  http: ^1.2.1                # API calls
+  image_picker: ^1.1.2        # pick image/video from gallery or camera
+  file_picker: ^8.0.3         # pick any file type
+  cached_network_image: ^3.3.1 # display processed result images from server
+  provider: ^6.1.2            # state management
+  shared_preferences: ^2.2.3  # persist base URL setting
+  path: ^1.9.0
+  intl: ^0.19.0               # date formatting
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADDITIONAL REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ThemeData must set:
+   - scaffoldBackgroundColor: bgPrimary
+   - colorScheme: dark scheme with primary=accent, surface=bgSecondary
+   - All default widget colors overridden to match the design system
+   - No default blue anywhere
+
+2. Settings screen (accessible from About via gear icon):
+   - Text field to configure the Flask server base URL
+   - Saved to SharedPreferences
+   - "Test Connection" button that calls /api/v1/health
+
+3. File picker must support:
+   - Images: jpg, jpeg, png, bmp, webp
+   - Videos: mp4, avi, mov, mkv
+   - Show file size and type after selection
+   - Validate max 100MB before uploading
+
+4. Result image display:
+   - Load from server URL: baseUrl + outputUrl
+   - Use CachedNetworkImage with shimmer placeholder
+   - Pinch-to-zoom using InteractiveViewer
+
+5. Error handling:
+   - Network timeout: 120 seconds (videos can be slow)
+   - Show retry button on failure
+   - Graceful empty states on dashboard when no history
+
+6. Generate ALL files completely — no placeholders, no TODOs.
+   Every screen, widget, model, and service must be fully implemented
+   and ready to run with flutter run.

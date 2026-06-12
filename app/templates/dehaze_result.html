@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Dehaze Result — FogVision{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-1">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('detection.detect_home') }}">Detection</a></li>
+        <li class="breadcrumb-item active">Dehaze Result</li>
+      </ol>
+    </nav>
+    <h1 class="page-title">
+      <i class="bi bi-cloud-fog2-fill me-3 text-accent"></i>Dehazing Result
+    </h1>
+    <p class="page-subtitle">DehazeFormer image enhancement complete</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- ===== SUMMARY CARDS ===== -->
+  <div class="row g-3 mb-5">
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center stat-card-accent">
+        <div class="stat-icon"><i class="bi bi-cloud-fog2-fill text-accent"></i></div>
+        <div class="stat-number">{{ inference_ms }}<small class="fs-6">ms</small></div>
+        <div class="stat-label">Dehaze Time</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-stars text-warning"></i></div>
+        <div class="stat-number" style="font-size:1.1rem;">Enhanced</div>
+        <div class="stat-label">Image Status</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-cpu-fill text-accent"></i></div>
+        <div class="stat-number" style="font-size:1rem;">DehazeFormer-S</div>
+        <div class="stat-label">Model Used</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card text-center">
+        <div class="stat-icon"><i class="bi bi-image-fill"></i></div>
+        <div class="stat-number" style="font-size:1.1rem;">Image</div>
+        <div class="stat-label">File Type</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ===== BEFORE / AFTER COMPARISON ===== -->
+    <div class="col-lg-8">
+      <div class="glass-card p-4">
+        <h5 class="card-section-title mb-4">
+          <i class="bi bi-images me-2 text-accent"></i>Before &amp; After
+        </h5>
+
+        <!-- Tab toggle -->
+        <ul class="nav nav-pills result-tabs mb-4">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#dehazedView">
+              <i class="bi bi-stars me-1"></i>Dehazed
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#originalView">
+              <i class="bi bi-image me-1"></i>Original
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#splitView">
+              <i class="bi bi-layout-split me-1"></i>Split View
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+
+          <!-- Dehazed -->
+          <div class="tab-pane fade show active" id="dehazedView">
+            <div class="result-media-wrap">
+              <img src="{{ url_for('static', filename='dehazed/' + dehazed_file) }}"
+                   alt="Dehazed Image" class="result-media" id="dehazedImg" />
+              <div class="media-overlay-badge" style="background:rgba(123,47,247,0.9);">
+                <i class="bi bi-stars me-1"></i>Dehazed
+              </div>
+            </div>
+          </div>
+
+          <!-- Original -->
+          <div class="tab-pane fade" id="originalView">
+            <div class="result-media-wrap">
+              <img src="{{ url_for('static', filename='uploads/' + original_file) }}"
+                   alt="Original Hazy Image" class="result-media" id="originalImg" />
+              <div class="media-overlay-badge badge-original">
+                <i class="bi bi-cloud-fog2 me-1"></i>Original (Hazy)
+              </div>
+            </div>
+          </div>
+
+          <!-- Split View — interactive slider -->
+          <div class="tab-pane fade" id="splitView">
+            <div class="split-compare-wrap" id="splitWrap">
+              <img src="{{ url_for('static', filename='uploads/' + original_file) }}"
+                   alt="Original" class="split-img split-before" id="splitBefore" />
+              <img src="{{ url_for('static', filename='dehazed/' + dehazed_file) }}"
+                   alt="Dehazed" class="split-img split-after" id="splitAfter" />
+              <!-- Drag handle -->
+              <div class="split-handle" id="splitHandle">
+                <div class="split-handle-line"></div>
+                <div class="split-handle-btn">
+                  <i class="bi bi-arrows-expand-vertical"></i>
+                </div>
+              </div>
+              <!-- Labels -->
+              <span class="split-label split-label-left">Original</span>
+              <span class="split-label split-label-right">Dehazed</span>
+            </div>
+            <p class="text-center mt-2" style="color:#9aa3b8; font-size:0.8rem;">
+              <i class="bi bi-arrows-expand-vertical me-1"></i>Drag the handle to compare
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Action buttons -->
+        <div class="mt-4 d-flex gap-3 flex-wrap">
+          <a href="{{ url_for('detection.download_dehazed', filename=dehazed_file) }}"
+             class="btn btn-detect">
+            <i class="bi bi-download me-2"></i>Download Dehazed
+          </a>
+          <!-- Run detection on the dehazed image -->
+          <form action="{{ url_for('detection.detect_dehazed') }}" method="POST" class="d-inline">
+            <input type="hidden" name="dehazed_file" value="{{ dehazed_file }}" />
+            <input type="hidden" name="original_file" value="{{ original_file }}" />
+            <button type="submit" class="btn btn-outline-accent">
+              <i class="bi bi-lightning-charge-fill me-2"></i>Run Detection on This
+            </button>
+          </form>
+          <a href="{{ url_for('detection.detect_home') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-repeat me-2"></i>New Upload
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SIDE INFO ===== -->
+    <div class="col-lg-4">
+
+      <!-- DehazeFormer info -->
+      <div class="glass-card p-4 mb-4">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-info-circle-fill me-2 text-accent"></i>About DehazeFormer
+        </h5>
+        <p style="color:#b8c0d4; font-size:0.88rem; line-height:1.7;">
+          DehazeFormer uses a <strong>Vision Transformer</strong> architecture with
+          Multi-Dconv Head Transposed Attention (MDTA) and a Gated Feed-Forward
+          Network (GDFN) to remove haze from images.
+        </p>
+        <ul class="info-list mt-3">
+          <li><span class="info-key">Architecture</span><span class="info-val">U-Net Transformer</span></li>
+          <li><span class="info-key">Variant</span><span class="info-val">DehazeFormer-S</span></li>
+          <li><span class="info-key">Attention</span><span class="info-val">MDTA (Transposed)</span></li>
+          <li><span class="info-key">FFN</span><span class="info-val">GDFN (Gated)</span></li>
+          <li><span class="info-key">Inference</span><span class="info-val">{{ inference_ms }} ms</span></li>
+        </ul>
+      </div>
+
+      <!-- Next step card -->
+      <div class="glass-card p-4" style="border-color:rgba(0,212,255,0.2);">
+        <h5 class="card-section-title mb-3">
+          <i class="bi bi-arrow-right-circle-fill me-2 text-accent"></i>Next Step
+        </h5>
+        <p style="color:#9aa3b8; font-size:0.88rem;">
+          Now run YOLOv8 vehicle detection on the dehazed image for better results.
+        </p>
+        <form action="{{ url_for('detection.detect_dehazed') }}" method="POST">
+          <input type="hidden" name="dehazed_file" value="{{ dehazed_file }}" />
+          <input type="hidden" name="original_file" value="{{ original_file }}" />
+          <button type="submit" class="btn btn-detect w-100 mt-2">
+            <i class="bi bi-lightning-charge-fill me-2"></i>Detect Vehicles
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/split_compare.js') }}"></script>
+{% endblock %}
