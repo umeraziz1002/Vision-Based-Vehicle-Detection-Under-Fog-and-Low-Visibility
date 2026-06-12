@@ -9,6 +9,9 @@
 FogVision is a Flask-based web application that detects vehicles in foggy and low-visibility road environments using a custom-trained YOLOv8 model. It supports image upload, video processing, and live webcam detection, with a professional dashboard and REST API.
 
 ---
+<img width="1397" height="723" alt="image" src="https://github.com/user-attachments/assets/f28030c7-b832-4322-b94d-592b3d002055" />
+<img width="1401" height="724" alt="image" src="https://github.com/user-attachments/assets/5947f297-0293-4e98-8371-6109118e2cd8" />
+
 
 ## Features
 
